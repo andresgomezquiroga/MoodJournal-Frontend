@@ -1,31 +1,39 @@
 import { ThemeProvider } from "@emotion/react"
 import { ColorModeContext, useMode } from "./theme"
 import { CssBaseline } from "@mui/material"
-import TopBar from "./sceness/global/TopBar"
-import { Route, Routes } from "react-router-dom"
-import { Dashboard } from "@mui/icons-material"
-import Sidebar from "./sceness/global/Sidebar"
-
+import { Route, Routes, useLocation } from "react-router-dom"
+import Dashboard from "./sceness/Dashboard"
+import { lazy, Suspense } from "react"
+const Register = lazy(() => import('./sceness/Auth/Register'))
+const Topbar = lazy(() => import("./sceness/global/TopBar"))
+const Sidebar = lazy(() => import("./sceness/global/Sidebar"))
+const Login = lazy(() => import("./sceness/Auth/Login"))
+const Loading = lazy(() => import("./components/Loading"))
 
 function App() {
   const [theme, colorMode] = useMode()
+  const location = useLocation()
+  const isLoginRoute = location.pathname === '/' || location.pathname === '/register'
+
   return (
-    <>
-      <ColorModeContext.Provider value={colorMode}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline/>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Suspense fallback={<Loading />}>
           <div className="app">
-            <Sidebar/>
+            {!isLoginRoute && <Sidebar />}
             <main className="content">
-              <TopBar/>
+              {!isLoginRoute && <Topbar />}
               <Routes>
-                <Route path="/" element={<Dashboard/>}></Route>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/" element={<Login />} />
+                <Route path="/register" element={<Register />} />
               </Routes>
             </main>
           </div>
-        </ThemeProvider>
-      </ColorModeContext.Provider>
-    </>
+        </Suspense>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   )
 }
 
