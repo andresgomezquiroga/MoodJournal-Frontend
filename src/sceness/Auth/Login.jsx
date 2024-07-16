@@ -1,28 +1,77 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { Box, Button, Container, TextField, Typography } from '@mui/material';
-import { tokens } from '../../theme';
-import { Link } from 'react-router-dom';
+import { Box, Button, Container, IconButton, TextField, Typography } from '@mui/material';
+import { ColorModeContext, tokens } from '../../theme';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Formik } from 'formik';
+import * as Yup from 'yup'
+import { ApisAxios } from '../../api/ApiAxios';
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+
 
 const Login = () => {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [iserror, setiserror] = useState(false)
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
+    const colorModeContext = useContext(ColorModeContext);
+    const location = useLocation()
+    const navigate = useNavigate()
 
 
-    const submit = (e) => {
-        e.preventDefault()
-        if (email.trim() !== '' || password.trim() !== '') {
-            console.log(email)
-            console.log(password)
-            setiserror(false)
+    const [valuesInitial, setvaluesInitial] = useState({
+        email: "",
+        password: ""
+    })
+
+
+    const postLogin = async (email, password) => {
+        try {
+            const response = await ApisAxios.post('/login', { email: email, password: password })
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token)
+                setvaluesInitial({
+                    email: "",
+                    password: ""
+                })
+                // navigate('/dashboard', { state: { formLogin: true, message: response.data.message } })
+                navigate('/dashboard')
+            }
+            else {
+                toast.warning(response.data.error || 'Error desconocida')
+            }
+
+        } catch (error) {
+            if (error.response) {
+                console.log('Error response', error.response.data)
+                toast.warning(error.response.data.error || 'Error desconocida')
+            } else if (error.request) {
+                console.log('Error request', error.response.data)
+                toast.error('No se ha recibido la solicitud')
+            } else {
+                console.log('Error mensaje', error.message)
+                toast.error('Hubo un error al iniciar sesión')
+            }
         }
-        else {
-            setiserror(true)
-            console.log('Campo vacio')
+    }
+
+    const validationsSchema = Yup.object().shape({
+        email: Yup.string().email('Correo invalido').required('El correo es requerido'),
+        password: Yup.string().required('La contraseña es requerida')
+    })
+
+    useEffect(() => {
+        if (location.state?.formRegister) {
+            toast.success(`${location.state.message}.Por favor, inicie sesión.`);
+            // el replace es para limpiar el estado antes que el usuario refresque
+            navigate('/', { replace: true })
         }
+    }, [location.state, navigate])
+
+
+    const submit = (data) => {
+        postLogin(data.email, data.password)
     }
 
     return (
@@ -36,6 +85,15 @@ const Login = () => {
                 color: colors.greenAccent[100]
             }}
         >
+            <IconButton onClick={colorModeContext.toggleColorMode}>
+                {
+                    theme.palette.mode === 'dark' ? (
+                        <DarkModeOutlinedIcon />
+                    ) : (
+                        <LightModeOutlinedIcon />
+                    )
+                }
+            </IconButton>
             <Box
                 sx={{
                     display: 'flex',
@@ -47,6 +105,7 @@ const Login = () => {
                     width: '400px'
                 }}
             >
+
                 <Typography
                     variant='h4'
                     color={colors.greenAccent[500]}
@@ -57,75 +116,81 @@ const Login = () => {
                 >
                     Inicio de sesión
                 </Typography>
-                <Box
-                    component="form"
-                    onSubmit={submit}
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        width: '100%',
-                        maxWidth: '400px',
-                    }}
-                >
-                    <TextField
-                        id="email"
-                        name="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        label="Correo"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            style: { color: colors.grey[100] }
-                        }}
-                        InputProps={{
-                            style: { color: colors.grey[100] },
-                            sx: { borderColor: colors.grey[100] }
-                        }}
-                        error={iserror}
-                        helperText={iserror ? 'Campo esta vacio' : ''}
-                    />
+                <Formik initialValues={valuesInitial} onSubmit={submit} validationSchema={validationsSchema}>
+                    {({ values, handleChange, handleSubmit, errors }) => (
+                        <Box
+                            component="form"
+                            onSubmit={handleSubmit}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                width: '100%',
+                                maxWidth: '400px',
+                            }}
+                        >
+                            <TextField
+                                id="email"
+                                name="email"
+                                value={values.email}
+                                onChange={handleChange}
+                                error={!!errors.email}
+                                helperText={errors.email}
+                                label="Correo"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                InputLabelProps={{
+                                    style: { color: colors.grey[100] }
+                                }}
+                                InputProps={{
+                                    style: { color: colors.grey[100] },
+                                    sx: { borderColor: colors.grey[100] }
+                                }}
+                            />
 
-                    <TextField
-                        id="password"
-                        name="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        label="Contraseña"
-                        variant="outlined"
-                        type="password"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            style: { color: colors.grey[100] }
-                        }}
-                        InputProps={{
-                            style: { color: colors.grey[100] },
-                            sx: { borderColor: colors.grey[100] }
-                        }}
-                        error={iserror}
-                        helperText={iserror ? 'Campo esta vacio' : ''}
-                    />
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        sx={{
-                            mt: 3,
-                            bgcolor: colors.greenAccent[500],
-                            '&:hover': {
-                                bgcolor: colors.greenAccent[400],
-                            },
-                            color: colors.grey[900]
-                        }}
-                    >
-                        Ingresar
-                    </Button>
-                    <Link to='/register' style={{listStyle: 'none', color: colors.greenAccent[400], margin: "10px"}}>Registrarse usuario</Link>
-                </Box>
+                            <TextField
+                                id="password"
+                                name="password"
+                                value={values.password}
+                                onChange={handleChange}
+                                error={!!errors.password}
+                                helperText={errors.password}
+                                label="Contraseña"
+                                variant="outlined"
+                                type="password"
+                                fullWidth
+                                margin="normal"
+                                InputLabelProps={{
+                                    style: { color: colors.grey[100] }
+                                }}
+                                InputProps={{
+                                    style: { color: colors.grey[100] },
+                                    sx: { borderColor: colors.grey[100] }
+                                }}
+                            />
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                sx={{
+                                    mt: 3,
+                                    bgcolor: colors.greenAccent[500],
+                                    '&:hover': {
+                                        bgcolor: colors.greenAccent[400],
+                                    },
+                                    color: colors.grey[900]
+                                }}
+                            >
+                                Ingresar
+                            </Button>
+                            <Link to='/register' style={{ listStyle: 'none', color: colors.greenAccent[400], margin: "10px" }}>Registrarse usuario</Link>
+                        </Box>
+                    )}
+                </Formik>
+                <ToastContainer theme='dark' />
             </Box>
+
         </Container>
     );
 }

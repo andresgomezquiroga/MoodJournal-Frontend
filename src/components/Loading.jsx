@@ -8,7 +8,7 @@ const Loading = () => {
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
     return (
-        <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh', background: colors.blueAccent[400] }}>
+        <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
             <BarLoader width={150} color={colors.greenAccent[500]} />
         </Container>
     )
