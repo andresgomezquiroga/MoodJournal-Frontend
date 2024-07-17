@@ -35,8 +35,7 @@ const Login = () => {
                     email: "",
                     password: ""
                 })
-                // navigate('/dashboard', { state: { formLogin: true, message: response.data.message } })
-                navigate('/dashboard')
+                navigate('/dashboard', { state: { formLogin: true, message: response.data.message } })
             }
             else {
                 toast.warning(response.data.error || 'Error desconocida')
