@@ -9,6 +9,7 @@ import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import imgDefect from '/img/imgDefect.webp';
 import { ListAltOutlined } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
 
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -131,6 +132,13 @@ const Sidebar = () => {
               icon={<PeopleOutlinedIcon />}
               style={{ color: colors.grey[100] }}
             >
+                <Item
+                title='Crear usuario'
+                to='/createUser'
+                icon={<AddIcon  />}
+                selected={selected}
+                setSelected={setSelected}
+              />
               <Item
                 title='Listar usuarios'
                 to='/listUser'
@@ -138,6 +146,7 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
               />
+
             </SubMenu>
           </Box>
         </Menu>

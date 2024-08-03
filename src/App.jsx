@@ -10,6 +10,7 @@ const Sidebar = lazy(() => import("./sceness/global/Sidebar"))
 const Login = lazy(() => import("./sceness/Auth/Login"))
 const Loading = lazy(() => import("./components/Loading"))
 const ListUser = lazy(() => import('./sceness/users/List'))
+const CreateUser = lazy(() => import('./sceness/users/Create'))
 
 function App() {
   const [theme, colorMode] = useMode()
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/listUser" element={<ListUser/>}></Route>
+                <Route path="/createUser" element={<CreateUser/>}></Route>
               </Routes>
             </main>
           </div>

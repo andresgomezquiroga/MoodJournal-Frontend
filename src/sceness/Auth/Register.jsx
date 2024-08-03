@@ -30,7 +30,7 @@ const Register = () => {
         password: Yup.string().required("La contraseña es requerida"),
         confirmPassword: Yup.string().oneOf([Yup.ref('password')], "Las contraseñas no coinciden").required('Confirmación de contraseña requerida'),
     })
-    const submit = async (data) => {
+    const submit = async (data, { resetForm }) => {
         try {
             const response = await ApisAxios.post("auth/register", {
                 name: data.name,
@@ -42,29 +42,21 @@ const Register = () => {
 
             if (response.data.message === 'Usuario creado correctamente') {
                 console.log(data)
-                setvaluesInitial({
-                    ...valuesInitial,
-                    name: "",
-                    last_name: "",
-                    age: "",
-                    email: "",
-                    confirmPassword: "",
-                    password: ""
-                })
                 navigate('/', { state: { formRegister: true, message: response.data.message } })
+                resetForm()
             }
-            else{
+            else {
                 toast.error(response.data.error || 'Error desconocido')
             }
         } catch (error) {
             if (error.response) {
                 console.log('Error response: ', error.response.data)
                 toast.warn(error.response.data.error || 'Error no encontrado')
-            }else if (error.request) {
+            } else if (error.request) {
                 console.log('Error de la request: ', error.response.data)
                 toast.error('No se ha recibido la solicitud')
             }
-            else{
+            else {
                 console.log(error);
                 toast.error('Hubo un error al crear el usuario')
             }
