@@ -133,7 +133,7 @@ const Sidebar = () => {
             >
               <Item
                 title='Listar usuarios'
-                to='#'
+                to='/listUser'
                 icon={<ListAltOutlined  />}
                 selected={selected}
                 setSelected={setSelected}

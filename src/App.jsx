@@ -9,6 +9,7 @@ const Topbar = lazy(() => import("./sceness/global/TopBar"))
 const Sidebar = lazy(() => import("./sceness/global/Sidebar"))
 const Login = lazy(() => import("./sceness/Auth/Login"))
 const Loading = lazy(() => import("./components/Loading"))
+const ListUser = lazy(() => import('./sceness/users/List'))
 
 function App() {
   const [theme, colorMode] = useMode()
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/listUser" element={<ListUser/>}></Route>
               </Routes>
             </main>
           </div>

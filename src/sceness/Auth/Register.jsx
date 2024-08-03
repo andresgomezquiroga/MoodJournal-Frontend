@@ -32,7 +32,7 @@ const Register = () => {
     })
     const submit = async (data) => {
         try {
-            const response = await ApisAxios.post("/register", {
+            const response = await ApisAxios.post("auth/register", {
                 name: data.name,
                 last_name: data.last_name,
                 age: data.age,

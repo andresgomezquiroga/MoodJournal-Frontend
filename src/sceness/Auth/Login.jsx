@@ -28,14 +28,14 @@ const Login = () => {
 
     const postLogin = async (email, password) => {
         try {
-            const response = await ApisAxios.post('/login', { email: email, password: password })
+            const response = await ApisAxios.post('auth/login', { email: email, password: password })
             if (response.data.token) {
-                localStorage.setItem('token', response.data.token)
+                const token = localStorage.setItem('token', response.data.token)
                 setvaluesInitial({
                     email: "",
                     password: ""
                 })
-                navigate('/dashboard', { state: { formLogin: true, message: response.data.message } })
+                navigate('/dashboard', { state: { formLogin: true, message: response.data.message, tokenSuccess: token } })
             }
             else {
                 toast.warning(response.data.error || 'Error desconocida')
