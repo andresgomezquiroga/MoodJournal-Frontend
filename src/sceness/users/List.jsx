@@ -11,6 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import Backdrop from '@mui/material/Backdrop';
 import { GridToolbar } from '@mui/x-data-grid';
+import { useNavigate } from 'react-router-dom';
 
 const List = () => {
   const theme = useTheme();
@@ -18,6 +19,7 @@ const List = () => {
   const [userArray, setUserArray] = useState([]);
   const [open, setOpen] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
+  const navigate = useNavigate()
 
   const handleOpen = (id) => {
     setUserIdToDelete(id);
@@ -41,6 +43,32 @@ const List = () => {
       console.log(error);
     }
   };
+
+  const getDataId = async(id)=> {
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        toast.warning('El token no existe')
+      }
+      const response = await ApisAxios.get(`/users/${id}`,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      navigate('/createUser', {state: {data: response.data, isEdit: true}})
+    } catch (error) {
+      if (error.response) {
+        console.log('Error response: ', error.response.data);
+        toast.warn(error.response.data.error || 'Error no encontrado');
+      } else if (error.request) {
+        console.log('Error de la request: ', error.response.data);
+        toast.error('No se ha recibido la solicitud');
+      } else {
+        console.log(error);
+        toast.error('Hubo un error al crear el usuario');
+      }
+    }
+  }
 
   useEffect(() => {
     getAllUser();
@@ -105,7 +133,7 @@ const List = () => {
       type: "number",
       headerAlign: "left",
       align: "left",
-      cellClassName: "last_name-column--cell"
+      cellClassName: "age-column--cell"
     },
     {
       field: "email",
@@ -120,7 +148,7 @@ const List = () => {
         const { id } = params.row;
         return (
           <Box display="center" justifyContent="center" alignItems="center">
-            <Button variant="contained"><EditIcon /> Editar</Button>
+            <Button variant="contained" onClick={() => getDataId(id)}><EditIcon /> Editar</Button>
             <Button variant="outlined" color='error' onClick={() => handleOpen(id)}><DeleteForeverIcon />Eliminar</Button>
             <Modal
               aria-labelledby="transition-modal-title"

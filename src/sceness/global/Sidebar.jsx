@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { jwtDecode } from "jwt-decode";
 import { ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import 'react-pro-sidebar/dist/css/styles.css';
 import { Box, IconButton, Typography, useTheme } from '@mui/material';
@@ -10,7 +11,8 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import imgDefect from '/img/imgDefect.webp';
 import { ListAltOutlined } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
-
+import { ApisAxios } from '../../api/ApiAxios';
+import { toast } from 'react-toastify';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -35,7 +37,18 @@ const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [selected, setSelected] = useState('Dashboard');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    const decode = jwtDecode(token)
+    setName(decode.name)
+    setLastName(decode.last_name)
+    setEmail(decode.email)
+  }, [])
 
   return (
     <Box
@@ -102,10 +115,13 @@ const Sidebar = () => {
                   fontWeight='bold'
                   sx={{ m: '10px 0 0 0' }}
                 >
-                  Ed Roh
+                  {name || 'Loading...'}
                 </Typography>
                 <Typography variant='h5' color={colors.greenAccent[500]}>
-                  VP Fancy Admin
+                  {lastName || 'Loading...'}
+                </Typography>
+                <Typography variant='h5' color={colors.greenAccent[500]}>
+                  {email || 'Loading...'}
                 </Typography>
               </Box>
             </Box>
@@ -132,26 +148,25 @@ const Sidebar = () => {
               icon={<PeopleOutlinedIcon />}
               style={{ color: colors.grey[100] }}
             >
-                <Item
+              <Item
                 title='Crear usuario'
                 to='/createUser'
-                icon={<AddIcon  />}
+                icon={<AddIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
               <Item
                 title='Listar usuarios'
                 to='/listUser'
-                icon={<ListAltOutlined  />}
+                icon={<ListAltOutlined />}
                 selected={selected}
                 setSelected={setSelected}
               />
-
             </SubMenu>
           </Box>
         </Menu>
       </ProSidebar>
-    </Box >
+    </Box>
   );
 };
 
