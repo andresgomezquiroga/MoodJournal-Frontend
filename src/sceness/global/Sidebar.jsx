@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
 import { ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import 'react-pro-sidebar/dist/css/styles.css';
-import { Box, IconButton, Typography, useTheme } from '@mui/material';
+import { Avatar, Box, IconButton, Typography, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { tokens } from '../../theme';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -11,8 +11,6 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import imgDefect from '/img/imgDefect.webp';
 import { ListAltOutlined } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
-import { ApisAxios } from '../../api/ApiAxios';
-import { toast } from 'react-toastify';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -41,6 +39,8 @@ const Sidebar = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [selected, setSelected] = useState('Dashboard');
+  const [firstLetter, setfirstLetter] = useState('')
+  const [colorRandomUser, setcolorRandomUser] = useState('')
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -49,6 +49,41 @@ const Sidebar = () => {
     setLastName(decode.last_name)
     setEmail(decode.email)
   }, [])
+
+  useEffect(() => {
+    if (name) {
+      const firstLetterUser = name.split('')[0]
+      setfirstLetter(firstLetterUser)
+    }
+  }, [name])
+  const COLORS = [
+    'blue',
+    'green',
+    'purple',
+    'red',
+    'yellow',
+    'orange',
+    'pink',
+    'teal',
+    'cyan',
+    'lime',
+    'indigo',
+    'brown',
+    'grey'
+  ];
+
+  useEffect(() => {
+    const getColor = localStorage.getItem('userColor')
+    if (getColor) {
+      setcolorRandomUser(getColor)
+    }
+    else if (COLORS.length > 0) {
+      const colorRandom = Math.floor(Math.random() * COLORS.length)
+      const newColor = COLORS[colorRandom]
+      setcolorRandomUser(newColor)
+      localStorage.setItem('userColor', newColor)
+    }
+  }, [COLORS])
 
   return (
     <Box
@@ -88,7 +123,7 @@ const Sidebar = () => {
                 ml='15px'
               >
                 <Typography variant='h3' color={colors.grey[100]}>
-                  ADMINIS
+                  ADMINISTRADOR
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
@@ -100,13 +135,8 @@ const Sidebar = () => {
           {!isCollapsed && (
             <Box mb='25px'>
               <Box display='flex' justifyContent='center' alignItems='center'>
-                <img
-                  alt='profile-user'
-                  width='100px'
-                  height='100px'
-                  src={imgDefect}
-                  style={{ cursor: 'pointer', borderRadius: '50%' }}
-                />
+                <Avatar sx={{ bgcolor: colorRandomUser, cursor: 'pointer', borderRadius: '50%', width: '100px', height: '100px', fontSize: '50px' }}>
+                  {firstLetter}</Avatar>
               </Box>
               <Box textAlign='center'>
                 <Typography
