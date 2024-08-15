@@ -22,6 +22,7 @@ const Dashboard = () => {
     }
   }, [location.state, navigate])
 
+
   return (
     <div style={{ display: 'flex', justifyContent: "center", alignItems: "center", height: "70vh" }}>
       Este es el Dashboard

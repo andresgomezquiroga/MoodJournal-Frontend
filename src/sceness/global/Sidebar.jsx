@@ -11,6 +11,7 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import imgDefect from '/img/imgDefect.webp';
 import { ListAltOutlined } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
+import { toast } from 'react-toastify';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -43,12 +44,22 @@ const Sidebar = () => {
   const [colorRandomUser, setcolorRandomUser] = useState('')
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const decode = jwtDecode(token)
-    setName(decode.name)
-    setLastName(decode.last_name)
-    setEmail(decode.email)
-  }, [])
+    const token = localStorage.getItem('token');
+
+    if (typeof token !== "string") {
+      toast.error('Invalid token specified: must be a string')
+      return
+    }
+
+    try {
+      const decode = jwtDecode(token);
+      setName(decode.name);
+      setLastName(decode.last_name);
+      setEmail(decode.email);
+    } catch (error) {
+      toast.error('Error al decodificar el token');
+    }
+  }, []);
 
   useEffect(() => {
     if (name) {

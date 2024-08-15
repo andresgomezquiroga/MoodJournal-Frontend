@@ -8,6 +8,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 const Topbar = () => {
   const theme = useTheme();
@@ -38,6 +39,10 @@ const Topbar = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token')
+    if (typeof token !== "string") {
+      toast.error('Invalid token specified: must be a string')
+      return
+    }
     const getName = jwtDecode(token)
     setname(getName.name)
     if (name) {
