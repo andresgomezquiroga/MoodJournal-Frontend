@@ -40,7 +40,16 @@ const List = () => {
       });
       setUserArray(response.data);
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        console.log('Error response: ', error.response.data);
+        toast.warn(error.response.data.error || 'Error no encontrado');
+      } else if (error.request) {
+        console.log('Error de la request: ', error.response.data);
+        toast.error('No se ha recibido la solicitud');
+      } else {
+        console.log(error);
+        toast.error('Hubo un error al crear el usuario');
+      }
     }
   };
 

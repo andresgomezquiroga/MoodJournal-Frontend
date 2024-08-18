@@ -8,7 +8,6 @@ import { tokens } from '../../theme';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import imgDefect from '/img/imgDefect.webp';
 import { ListAltOutlined } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import { toast } from 'react-toastify';
@@ -42,6 +41,7 @@ const Sidebar = () => {
   const [selected, setSelected] = useState('Dashboard');
   const [firstLetter, setfirstLetter] = useState('')
   const [colorRandomUser, setcolorRandomUser] = useState('')
+  const [selectImage, setselectImage] = useState(null)
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -56,6 +56,7 @@ const Sidebar = () => {
       setName(decode.name);
       setLastName(decode.last_name);
       setEmail(decode.email);
+      setselectImage(decode.image)
     } catch (error) {
       toast.error('Error al decodificar el token');
     }
@@ -146,8 +147,13 @@ const Sidebar = () => {
           {!isCollapsed && (
             <Box mb='25px'>
               <Box display='flex' justifyContent='center' alignItems='center'>
-                <Avatar sx={{ bgcolor: colorRandomUser, cursor: 'pointer', borderRadius: '50%', width: '100px', height: '100px', fontSize: '50px' }}>
-                  {firstLetter}</Avatar>
+                {selectImage ? (
+                  <img src={selectImage} alt="" style={{cursor: 'pointer', borderRadius: '50%', width: '100px', height: '100px', fontSize: '50px'}}/>
+                ) : (
+                  <Avatar sx={{ bgcolor: colorRandomUser, cursor: 'pointer', borderRadius: '50%', width: '100px', height: '100px', fontSize: '50px' }}>
+                    {firstLetter}</Avatar>
+                )}
+
               </Box>
               <Box textAlign='center'>
                 <Typography
